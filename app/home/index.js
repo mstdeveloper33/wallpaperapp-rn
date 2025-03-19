@@ -6,13 +6,23 @@ import { theme } from '../../constants/theme';
 import { StatusBar } from 'expo-status-bar';
 import { wp , hp } from '../../helpers/common';
 import { useState , useRef } from 'react';
+import { categories } from '../../constants/data';
+import Categories from '../../components/categories';
 
 
 const HomeScreen = () => {
   const {top} = useSafeAreaInsets();
   const paddingTop = top>0 ?  top + 10 : 30;
   const [search , setSearch] = useState('');
+  const [activeCategory , setActiveCategory] = useState(null);
   const searchInputRef = useRef(null);
+
+
+
+  const handleChangeCategory = (cat) => {
+    setActiveCategory(cat);
+  }
+
 
 
 
@@ -52,8 +62,11 @@ const HomeScreen = () => {
             </Pressable>
             )
           }
-        
         </View>
+
+          <View style = {styles.categories}>
+            <Categories activeCategory = {activeCategory} handleChangeCategory = {handleChangeCategory} ></Categories>
+          </View>
 
       </ScrollView>
     </View>
@@ -103,8 +116,11 @@ const styles = StyleSheet.create({
     backgroundColor : theme.colors.neutral(0.1),
     padding : 8,
     borderRadius : theme.radius.sm
+  },
+  categories : {
+    
   }
-
+  
 })
 
 export default HomeScreen
