@@ -41,13 +41,13 @@ const WelcomeScreen = () => {
 
 
         </View>
-
       </Animated.View>
-
-    
     </View>
   )
 }
+
+
+
 
 const styles = StyleSheet.create({
     container : {

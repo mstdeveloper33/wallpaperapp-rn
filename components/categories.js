@@ -20,11 +20,9 @@ const Categories = ({activeCategory , handleChangeCategory}) => {
      title={item}
      index={index}
      >
-
      </CategoryItem>
      )}
     >
-
     </FlatList>
   )
 }

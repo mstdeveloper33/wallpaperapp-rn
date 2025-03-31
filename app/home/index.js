@@ -5,9 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../../constants/theme';
 import { StatusBar } from 'expo-status-bar';
 import { wp , hp } from '../../helpers/common';
-import { useState , useRef } from 'react';
-import { categories } from '../../constants/data';
+import { useState , useRef , useEffect } from 'react';
 import Categories from '../../components/categories';
+import ImageGrid from '../../components/imageGrid';
+import { apiCall } from '../../api';
 
 
 const HomeScreen = () => {
@@ -15,15 +16,30 @@ const HomeScreen = () => {
   const paddingTop = top>0 ?  top + 10 : 30;
   const [search , setSearch] = useState('');
   const [activeCategory , setActiveCategory] = useState(null);
+  const [images , setImages] = useState([]);
   const searchInputRef = useRef(null);
 
 
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
+
+  const fetchImages = async (params = {page:1} , append = false) => {
+    let res = await apiCall(params);
+    if(res.success && res?.data?.hits){
+      if(append) 
+        setImages([ ...images, ...res.data.hits])
+    else 
+        setImages([...res.data.hits]);
+  }
+  }
 
   const handleChangeCategory = (cat) => {
     setActiveCategory(cat);
   }
 
-
+  
 
 
   return (
@@ -62,12 +78,19 @@ const HomeScreen = () => {
             </Pressable>
             )
           }
+
+
         </View>
 
+          {/* categories */}
           <View style = {styles.categories}>
             <Categories activeCategory = {activeCategory} handleChangeCategory = {handleChangeCategory} ></Categories>
           </View>
-
+          
+          {/* images grid */}
+          <View>
+             { images.length > 0 && <ImageGrid images={images} /> }
+          </View>
       </ScrollView>
     </View>
   )
@@ -122,5 +145,6 @@ const styles = StyleSheet.create({
   }
   
 })
+
 
 export default HomeScreen
