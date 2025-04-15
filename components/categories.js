@@ -39,18 +39,7 @@ const CategoryItem = ({title , index , isActive, handleChangeCategory}) => {
   )
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 const styles = StyleSheet.create({
   flatlistContainer : {
