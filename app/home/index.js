@@ -24,7 +24,8 @@ const HomeScreen = () => {
   const [filters , setFilters] = useState({});
   const searchInputRef = useRef(null);
   const modalRef = useRef(null);
-
+  const scrollRef = useRef(null);
+  const [ isEndReached , setIsEndReached] = useState(false);
 
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const HomeScreen = () => {
   }, []);
 
 
-  const fetchImages = async (params = {page:1} , append = false) => {
+  const fetchImages = async (params = {page:1} , append = true) => {
     console.log(params,append);
     let res = await apiCall(params);
     if(res.success && res?.data?.hits){
@@ -131,7 +132,28 @@ const HomeScreen = () => {
   }
 
 
+  const handleScroll = (event) => {
+    const contentHeight = event.nativeEvent.contentSize.height;
+    const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
+    const scrollOffset = event.nativeEvent.contentOffset.y;
+    const bottomPossition = contentHeight - scrollViewHeight;
+    if(scrollOffset >= bottomPossition-1){
+      if(!isEndReached){
+        setIsEndReached(true);
+        ++page;
+        let params = {page, ...filters};
+        if(activeCategory) params.category = activeCategory;
+        if(search) params.q = search;
+        fetchImages(params);
+      }
+    }else if(isEndReached){
+      setIsEndReached(false);
+    }
+  }
 
+  const handleScrollUp = () => {
+    scrollRef?.current?.scrollTo({y : 0, animated : true});
+  }
 
   const handleTextDebounce = useCallback(
     debounce(handleSearch , 400), []
@@ -144,16 +166,20 @@ const HomeScreen = () => {
     <View style = {[styles.container , {paddingTop}]}>
        <StatusBar style='dark'></StatusBar>
       <View style = {styles.header}>
-        <Pressable>
+        <Pressabl onPress = {handleScrollUp}>
           <Text style = {styles.title}>
               Pixels
           </Text>
-        </Pressable>
+        </Pressabl>
         <Pressable onPress = {openFiltersModal}>
           <FontAwesome6 name = "bars-staggered" size = {22} color = {theme.colors.neutral(0.7)} ></FontAwesome6>
         </Pressable>
       </View>
       <ScrollView
+      onScroll = {handleScroll}
+      scrollEventThrottle = {5}
+      ref = {scrollRef}
+
       contentContainerStyle = {{gap : 15}}
       >
         <View style = {styles.searchBar}>
